@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  email     String      @unique
+  password  String
+  favorites Favorites[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @default(now())
+}
+
+model Artist {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  bio          String?
+  artistTracks ArtistTrack[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?     @default(now())
+}
+
+model ArtistTrack {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  artist    String
+  url       String
+  artwork   String?
+  favorites Favorites[]
+  Artist    Artist?     @relation(fields: [artistId], references: [id])
+  artistId  String?     @db.ObjectId
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @default(now())
+}
+
+model Track {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  artist    String
+  url       String
+  artwork   String?
+  favorites Favorites[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @default(now())
+}
+
+model TrendingTrack {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  artist    String
+  url       String
+  artwork   String?
+  favorites Favorites[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @default(now())
+}
+
+model Playlist {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  artwork        String
+  playlistTracks PlaylistTrack[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @default(now())
+}
+
+model PlaylistTrack {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  artist     String
+  url        String
+  artwork    String
+  favorites  Favorites[]
+  playlistId String      @db.ObjectId
+  playlist   Playlist    @relation(fields: [playlistId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @default(now())
+}
+
+// to handel many to many relationship beteween user who liked the track
+model Favorites {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String         @db.ObjectId
+  trackId         String         @db.ObjectId
+  user            User           @relation(fields: [userId], references: [id])
+  track           Track          @relation(fields: [trackId], references: [id])
+  PlaylistTrack   PlaylistTrack? @relation(fields: [playlistTrackId], references: [id])
+  playlistTrackId String?        @db.ObjectId
+  ArtistTrack     ArtistTrack?   @relation(fields: [artistTrackId], references: [id])
+  artistTrackId   String?        @db.ObjectId
+  TrendingTrack   TrendingTrack? @relation(fields: [trendingTrackId], references: [id])
+  trendingTrackId String?        @db.ObjectId
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @default(now())
+
+  @@unique([userId, trackId])
+}
+
+model Podcast {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  artwork     String
+  episodes    Episode[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now())
+}
+
+model Episode {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  artist      String
+  title       String
+  duration    Int
+  description String
+  artwork     String
+  url         String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now())
+  podcastId   String    @db.ObjectId
+  podcast     Podcast   @relation(fields: [podcastId], references: [id])
+}

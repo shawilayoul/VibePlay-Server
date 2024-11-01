@@ -1,0 +1,54 @@
+import { Injectable } from '@nestjs/common';
+import * as admin from 'firebase-admin';
+import { ServiceAccount } from 'firebase-admin';
+
+@Injectable()
+export class FirebaseService {
+  constructor() {
+    const serviceAccount = {
+      type: 'service_account',
+      project_id: 'fjusongs',
+      private_key_id: 'e2122555b00ceaceedb1bb3bd0d696ed24d969db',
+      private_key:
+        '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDDgji9xz7xT7E\ntObY70KJ8BwXcZS5yxPj62wGbyW5a2dCTdzjovZdOgiluambn/X9r3pFOmjPwveQ\n/4wJGPSFSLnAbsXaJimNU2dxKPQkUGGZhbQMANUzWyFhMxEqMYCJuU93BLTJCwe1\ncqTofCaatlrH7Odzp56VfvDkq5ev1axPfwHUVGYyie/LYrlX5F6O/vUHiPtAn5MB\nQuAoFrpVPD1JG/ogHG1j5gIVT3quvYOgWF++jQ8mh31c2exfCOM9+sTg1xadrQgA\n0z+b0T2goxxZ1KJrrAmB5hhN9srIW9pZOJPrc9XPXP3jjUTEinS/K8izKrUB4kZb\nKcb8kJ8DAgMBAAECggEAKWnA7ENwNWpnDcek3blK5NOEe1vDqoDZ+8G/wUv28/vA\nRD0Y4YH3kcqhDGKzhpW7Wj3YFXu1xirMek4vkrzoKaZLvfYm7s68csObClUaJN2m\nIzzWgdfpbEp0d1kq000IT/V20DvBEJBVdipdpfi6D44ZDyqW56DWlEIL7lkaTxwN\nYjJkXLbfD9O11sssbMIsJPso6hs2HnmK0AIw0xTDqpB45WEvDXVDomLGjx9pallr\nBtGFzFhEBokn/br3ehJ+0WSOkK1nJJWRfB6hfxj2FE5daVG8oLWOJh2dsRRUOUwG\nKJ/x971eMr+7Q+hnngxgpkVBWEgSrI6KtvaLGiYFQQKBgQDgpkic0pOzA++CItRZ\nsBDCGJbkpFaJiHY3U6SsfZVFtVYl5Ft74KwAfttaz1lYkKor10+4rM2WC+Ghwt/j\niBs/ypplemB9Y9gaqJ0ektBaPsgH7PU2dhOQUJ7pBsNsBnW5Fp+Dhe+cd0nln7C4\n6F9DsmOj35zHnwmeiQf6iQP+QwKBgQDeRncGoci5wXX6jQE6k1RREtb4MsVgVGwx\narj3AwRmONlAELLoTQeN/XUfw57vVYC4xDG3CDdwqbxNj6yvaj3+fIXJMa4GqsYN\nDzSsZ9Pymgtl+Krzjd0n8YYcESM2B+05I1snH7xSJHp94AVvgmxKH7AFmFBqBX/t\nBBGgItWwQQKBgQCaIr1TjE/21c5xdcBJQTpeUkzF19PgTZb+4w7rosbWq1LOcN4s\nIr0hIekTZ40f7TI1Hmf+h+IO/1vyhyjijrJTlIlW8x5dKjJOKD6ViZoXMVhBx91/\nXoiRzh8aN5/B8LS5J8KOlUkQC/DR8j1owVcLtcwT1gtWE9KfydmFlpj8zQKBgFk3\nTVUTIN82QKWFbUXWltRHzJMoxcJpgFfBb2ZuBpkFHmYxja3iJTMf1aAfQ67q0dTX\nouDFYoNNDbDQB08NRL7dulFMKH6ykvXw8YJ11kOdAxA15GAHxAnhTqP7WPe57MSv\nZUnp2gvaanQVs/jTD6Yc2+kS/svfUz6OEIkHEmBBAoGAaLSgl5ZWkK3Pa7wFkooi\nDT05BPVHm7jNUtETwHMzqQDukftTxzBPUzETA5iQ+Y5A6pthQot1JRNPf1gl1Ut3\n2CNN4mC4sRoKAhbKHiWeT78ZOraSMWRqtKVrztUH9GpxYliGwC0JQZ0sZHqcfbIJ\nqH8H6nj8PtGB971TpWe+d+Q=\n-----END PRIVATE KEY-----\n',
+      client_email: 'firebase-adminsdk-r9bvx@fjusongs.iam.gserviceaccount.com',
+      client_id: '100287394688711929491',
+      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+      token_uri: 'https://oauth2.googleapis.com/token',
+      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+      client_x509_cert_url:
+        'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-r9bvx%40fjusongs.iam.gserviceaccount.com',
+      universe_domain: 'googleapis.com',
+    };
+    //const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT); //this.configService.get<string>('SERVICE_ACCOUNT');
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount as ServiceAccount),
+      storageBucket: 'gs://fjusongs.appspot.com',
+    });
+  }
+
+  async uploadFile(file: Express.Multer.File, folder: string): Promise<string> {
+    const bucket = admin.storage().bucket();
+    //const fileName = Date.now() + file.originalname;
+    const blob = bucket.file(`${folder}/${file.originalname}`);
+    const blobStream = blob.createWriteStream({
+      resumable: false,
+      gzip: true,
+      contentType: file.mimetype,
+    });
+
+    return new Promise((resolve, reject) => {
+      blobStream.on('error', (err) => {
+        reject(new Error('Error uploading file to Firebase: ' + err));
+      });
+      blobStream.on('finish', async () => {
+        await blob.makePublic();
+        // Return the public URL of the uploaded file
+        const url = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        resolve(url);
+      });
+
+      blobStream.end(file.buffer);
+    });
+  }
+}
