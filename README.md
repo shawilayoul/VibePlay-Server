@@ -1,25 +1,25 @@
-# 🎧 VibePlay Backend
+# 🎧 VibePlay Music App Backend
 
 > Backend API for the VibePlay Music Streaming App – built with **NestJS**, **MongoDB**, and **Prisma**. Supports secure user authentication, song streaming, playlist management, and admin operations.
 
-## 🚀 Overview
+## Overview
 
 This is the backend service powering the **VibePlay** mobile and admin web applications. It is designed to be scalable, performant, and secure — providing RESTful API endpoints for user management, media content, playlists, and admin functions.
 
 ---
 
-## ⚙️ Features
+## Features
 
-- 🔐 **Authentication**: JWT-based secure auth for users and admins
-- 🎵 **Music Management**: Upload, stream, and organize songs
-- 📁 **Firebase Integration**: Store audio files and images
-- 📃 **Playlist System**: Create and manage user playlists
-- 👥 **User Roles**: Admin/user access separation
-- 🔄 **REST API**: Clean, modular API design using NestJS best practices
+- **Authentication**: JWT-based secure auth for users and admins
+- **Music Management**: Upload, stream, and organize songs
+- **Firebase Integration**: Store audio files and images
+- **Playlist System**: Create and manage user playlists
+- **User Roles**: Admin/user access separation
+- **REST API**: Clean, modular API design using NestJS best practices
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: [NestJS](https://nestjs.com/)
 - **Database**: [MongoDB](https://www.mongodb.com/) + [Prisma](https://www.prisma.io/)
